@@ -1,5 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <!-- Paleta de colores Boutique Moda Urbana -->
+    <color name="pink_primary">#B5154F</color>
+    <color name="pink_light">#FCE4EC</color>
+    <color name="dark_black">#1A1A1A</color>
+    <color name="white">#FFFFFF</color>
+    <color name="gray_light">#F5F5F5</color>
+    <color name="gray_text">#757575</color>
+
+    <!-- Colores base -->
     <color name="black">#FF000000</color>
-    <color name="white">#FFFFFFFF</color>
 </resources>

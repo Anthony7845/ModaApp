@@ -1,3 +1,35 @@
 <resources>
+    <!-- Nombre de la App -->
     <string name="app_name">ModaApp</string>
+    <string name="subtitle_brand">Boutique Moda Urbana</string>
+
+    <!-- Pantalla de Login -->
+    <string name="login_title">Iniciar Sesión</string>
+    <string name="username_hint">Usuario</string>
+    <string name="password_hint">Contraseña</string>
+    <string name="btn_login_admin">Ingresar como administrador</string>
+    <string name="btn_client_catalog">Ver catálogo (cliente)</string>
+    <string name="error_empty_username">Ingrese el usuario</string>
+    <string name="error_empty_password">Ingrese la contraseña</string>
+    <string name="login_failed_toast">Credenciales incorrectas</string>
+
+    <!-- Menú Administrador -->
+    <string name="welcome_admin">Hola, admin</string>
+    <string name="subtitle_admin_panel">Panel de Control General</string>
+    <string name="menu_clothes">Ropa</string>
+    <string name="menu_orders">Pedidos</string>
+    <string name="menu_clients">Clientes</string>
+    <string name="menu_reports">Reportes</string>
+    <string name="btn_logout">Salir</string>
+
+    <!-- Catálogo y Carrito Cliente -->
+    <string name="catalog_title">Catálogo de Moda</string>
+    <string name="welcome_catalog">Bienvenido al Catálogo</string>
+    <string name="subtitle_catalog">Explora nuestra colección urbana exclusiva.</string>
+    <string name="cart_title">Mi Carrito</string>
+    <string name="cart_icon_desc">Ver carrito</string>
+    <string name="title_clothes">Gestión de Ropa</string>
+    <string name="title_orders">Gestión de Pedidos</string>
+    <string name="title_clients">Listado de Clientes</string>
+    <string name="title_reports">Reportes de Ventas</string>
 </resources>
