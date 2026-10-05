@@ -18,19 +18,42 @@
         app:navigationIcon="@drawable/ic_back"
         app:navigationIconTint="@color/white" />
 
-    <LinearLayout
+    <com.google.android.material.textfield.TextInputLayout
+        style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:gravity="center"
-        android:orientation="vertical"
-        android:padding="16dp">
+        android:layout_height="wrap_content"
+        android:layout_margin="16dp"
+        android:hint="Buscar por nombre o teléfono...">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/etBuscadorCliente"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="text"
+            android:maxLines="1" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:background="@color/gray_light">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rvClientes"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:padding="16dp" />
 
         <TextView
+            android:id="@+id/tvEmptyClientes"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/title_clients"
-            android:textColor="@color/pink_primary"
-            android:textSize="22sp"
-            android:textStyle="bold" />
-    </LinearLayout>
+            android:layout_gravity="center"
+            android:text="No se encontraron clientes"
+            android:textColor="@color/gray_text"
+            android:textSize="16sp"
+            android:visibility="gone" />
+    </FrameLayout>
+
 </LinearLayout>

@@ -27,4 +27,15 @@ class UsuarioDao(context: Context) {
         cursor.close()
         return usuarioEncontrado
     }
+
+    fun obtenerTelefonoAdmin(): String {
+        val db = dbHelper.readableDatabase
+        val cursor = db.rawQuery("SELECT ${DBHelper.COL_USUARIO_TELEFONO} FROM ${DBHelper.TABLE_USUARIO} WHERE ${DBHelper.COL_USUARIO_ROL} = 'ADMIN' LIMIT 1", null)
+        var tel = "987654321"
+        if (cursor.moveToFirst()) {
+            tel = cursor.getString(0) ?: "987654321"
+        }
+        cursor.close()
+        return tel
+    }
 }

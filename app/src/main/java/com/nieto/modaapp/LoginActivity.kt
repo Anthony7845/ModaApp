@@ -1,5 +1,6 @@
 package com.nieto.modaapp
 
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.widget.Toast
@@ -12,13 +13,30 @@ class LoginActivity : AppCompatActivity() {
     private lateinit var binding: ActivityLoginBinding
     private lateinit var usuarioDao: UsuarioDao
 
+    companion object {
+        private const val PREF_NAME = "ModaAppPrefs"
+        private const val KEY_USUARIO = "key_usuario"
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        val sharedPrefs = getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
+        val usuarioGuardado = sharedPrefs.getString(KEY_USUARIO, null)
+        if (usuarioGuardado != null) {
+            val intent = Intent(this, MenuActivity::class.java).apply {
+                putExtra("EXTRA_USUARIO", usuarioGuardado)
+                putExtra("EXTRA_ROL", "ADMIN")
+            }
+            startActivity(intent)
+            finish()
+            return
+        }
+
         binding = ActivityLoginBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
         usuarioDao = UsuarioDao(this)
-
         setupListeners()
     }
 
@@ -31,6 +49,9 @@ class LoginActivity : AppCompatActivity() {
                 val usuario = usuarioDao.validarUsuario(username, password)
 
                 if (usuario != null && usuario.rol == "ADMIN") {
+                    val sharedPrefs = getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
+                    sharedPrefs.edit().putString(KEY_USUARIO, usuario.usuario).apply()
+
                     val intent = Intent(this, MenuActivity::class.java).apply {
                         putExtra("EXTRA_USUARIO", usuario.usuario)
                         putExtra("EXTRA_ROL", usuario.rol)

@@ -50,6 +50,9 @@
         <activity
             android:name=".PedidoActivity"
             android:exported="false" />
+        <activity
+            android:name=".DetallePedidoActivity"
+            android:exported="false" />
 
     </application>
 
