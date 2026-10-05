@@ -14,6 +14,9 @@ class MenuActivity : AppCompatActivity() {
         binding = ActivityMenuBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        val nombreUsuario = intent.getStringExtra("EXTRA_USUARIO") ?: "admin"
+        binding.tvWelcomeAdmin.text = getString(R.string.welcome_admin_format, nombreUsuario)
+
         setupClickListeners()
     }
 

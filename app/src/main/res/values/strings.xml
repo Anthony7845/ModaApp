@@ -15,6 +15,7 @@
 
     <!-- Menú Administrador -->
     <string name="welcome_admin">Hola, admin</string>
+    <string name="welcome_admin_format">Hola, %s</string>
     <string name="subtitle_admin_panel">Panel de Control General</string>
     <string name="menu_clothes">Ropa</string>
     <string name="menu_orders">Pedidos</string>

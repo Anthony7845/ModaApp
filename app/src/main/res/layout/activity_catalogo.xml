@@ -29,38 +29,42 @@
             app:iconTint="@color/white" />
     </com.google.android.material.appbar.MaterialToolbar>
 
-    <LinearLayout
+    <HorizontalScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:scrollbars="none"
+        android:paddingHorizontal="12dp"
+        android:paddingVertical="8dp">
+
+        <com.google.android.material.chip.ChipGroup
+            android:id="@+id/chipGroupCategorias"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:singleSelection="true"
+            app:selectionRequired="true" />
+    </HorizontalScrollView>
+
+    <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:gravity="center"
-        android:orientation="vertical"
-        android:padding="24dp">
+        android:background="@color/gray_light">
 
-        <ImageView
-            android:layout_width="80dp"
-            android:layout_height="80dp"
-            android:contentDescription="@string/catalog_title"
-            android:src="@drawable/ic_clothes"
-            app:tint="@color/pink_light" />
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rvCatalogo"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:padding="8dp" />
 
         <TextView
+            android:id="@+id/tvEmptyCatalog"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:text="@string/welcome_catalog"
-            android:textColor="@color/dark_black"
-            android:textSize="18sp"
-            android:textStyle="bold" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:gravity="center"
-            android:text="@string/subtitle_catalog"
+            android:layout_gravity="center"
+            android:text="No hay prendas disponibles"
             android:textColor="@color/gray_text"
-            android:textSize="14sp" />
-    </LinearLayout>
+            android:textSize="16sp"
+            android:visibility="gone" />
+    </FrameLayout>
 
 </LinearLayout>
