@@ -22,16 +22,32 @@
             app:navigationIcon="@drawable/ic_back"
             app:navigationIconTint="@color/white" />
 
+        <com.google.android.material.textfield.TextInputLayout
+            style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="16dp"
+            android:hint="Buscar por modelo, marca o color...">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/etBuscador"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="text"
+                android:maxLines="1" />
+        </com.google.android.material.textfield.TextInputLayout>
+
         <FrameLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="0dp"
+            android:layout_weight="1">
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/rvRopa"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:padding="16dp"
-                clipToPadding="false" />
+                android:paddingHorizontal="16dp"
+                android:paddingBottom="16dp" />
 
             <TextView
                 android:id="@+id/tvEmpty"

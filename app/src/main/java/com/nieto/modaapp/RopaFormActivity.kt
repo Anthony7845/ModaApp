@@ -2,9 +2,11 @@ package com.nieto.modaapp
 
 import android.net.Uri
 import android.os.Bundle
+import android.view.View
 import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import com.nieto.modaapp.data.Categoria
 import com.nieto.modaapp.data.CategoriaDao
@@ -21,6 +23,7 @@ class RopaFormActivity : AppCompatActivity() {
 
     private var categoriaList: List<Categoria> = emptyList()
     private var rutaFotoSeleccionada: String? = null
+    private var idPrendaEdicion: Int = -1
 
     private val pickImageLauncher = registerForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri: Uri? ->
         if (uri != null) {
@@ -43,7 +46,10 @@ class RopaFormActivity : AppCompatActivity() {
         categoriaDao = CategoriaDao(this)
         ropaDao = RopaDao(this)
 
+        idPrendaEdicion = intent.getIntExtra("id_ropa", -1)
+
         setupSpinners()
+        setupModoEdicion()
         setupListeners()
     }
 
@@ -58,6 +64,40 @@ class RopaFormActivity : AppCompatActivity() {
         val adapterTalla = ArrayAdapter(this, android.R.layout.simple_spinner_item, tallas)
         adapterTalla.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         binding.spinnerTalla.adapter = adapterTalla
+    }
+
+    private fun setupModoEdicion() {
+        if (idPrendaEdicion != -1) {
+            binding.toolbar.title = "Editar Prenda"
+            binding.btnGuardar.text = "Actualizar Prenda"
+            binding.btnEliminar.visibility = View.VISIBLE
+
+            val ropa = ropaDao.obtener(idPrendaEdicion)
+            if (ropa != null) {
+                binding.etModelo.setText(ropa.modelo)
+                binding.etMarca.setText(ropa.marca ?: "")
+                binding.etColor.setText(ropa.color ?: "")
+                binding.etPrecio.setText(ropa.precio.toString())
+                binding.etCantidad.setText(ropa.cantidad.toString())
+                rutaFotoSeleccionada = ropa.foto
+
+                val bitmap = ImageUtils.cargarBitmapReducido(ropa.foto, 300, 300)
+                if (bitmap != null) {
+                    binding.imgFotoPrenda.setImageBitmap(bitmap)
+                }
+
+                val catIndex = categoriaList.indexOfFirst { it.id == ropa.idCategoria }
+                if (catIndex != -1) {
+                    binding.spinnerCategoria.setSelection(catIndex)
+                }
+
+                val tallas = arrayOf("XS", "S", "M", "L", "XL")
+                val tallaIndex = tallas.indexOf(ropa.talla)
+                if (tallaIndex != -1) {
+                    binding.spinnerTalla.setSelection(tallaIndex)
+                }
+            }
+        }
     }
 
     private fun setupListeners() {
@@ -75,9 +115,27 @@ class RopaFormActivity : AppCompatActivity() {
 
         binding.btnGuardar.setOnClickListener {
             if (validarYGuardar()) {
-                Toast.makeText(this, "Prenda guardada exitosamente", Toast.LENGTH_SHORT).show()
+                val mensaje = if (idPrendaEdicion == -1) "Prenda registrada exitosamente" else "Prenda actualizada exitosamente"
+                Toast.makeText(this, mensaje, Toast.LENGTH_SHORT).show()
                 finish()
             }
+        }
+
+        binding.btnEliminar.setOnClickListener {
+            AlertDialog.Builder(this)
+                .setTitle("Eliminar Prenda")
+                .setMessage("¿Estás seguro de eliminar esta prenda?")
+                .setPositiveButton("Sí, eliminar") { _, _ ->
+                    val eliminado = ropaDao.eliminar(idPrendaEdicion)
+                    if (eliminado) {
+                        Toast.makeText(this, "Prenda eliminada", Toast.LENGTH_SHORT).show()
+                        finish()
+                    } else {
+                        Toast.makeText(this, "No se puede eliminar: tiene pedidos asociados", Toast.LENGTH_LONG).show()
+                    }
+                }
+                .setNegativeButton("Cancelar", null)
+                .show()
         }
     }
 
@@ -123,7 +181,8 @@ class RopaFormActivity : AppCompatActivity() {
         val categoriaSeleccionada = categoriaList[binding.spinnerCategoria.selectedItemPosition]
         val tallaSeleccionada = binding.spinnerTalla.selectedItem.toString()
 
-        val nuevaRopa = Ropa(
+        val ropa = Ropa(
+            id = if (idPrendaEdicion == -1) 0 else idPrendaEdicion,
             modelo = modelo,
             idCategoria = categoriaSeleccionada.id,
             talla = tallaSeleccionada,
@@ -134,7 +193,10 @@ class RopaFormActivity : AppCompatActivity() {
             foto = rutaFotoSeleccionada!!
         )
 
-        val resultado = ropaDao.insertar(nuevaRopa)
-        return resultado > 0
+        return if (idPrendaEdicion == -1) {
+            ropaDao.insertar(ropa) > 0
+        } else {
+            ropaDao.actualizar(ropa) > 0
+        }
     }
 }

@@ -9,9 +9,8 @@ class DBHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME, null
 
     companion object {
         private const val DATABASE_NAME = "modaapp.db"
-        private const val DATABASE_VERSION = 1
+        private const val DATABASE_VERSION = 2
 
-        // Tabla usuario
         const val TABLE_USUARIO = "usuario"
         const val COL_USUARIO_ID = "id"
         const val COL_USUARIO_NOMBRE = "usuario"
@@ -24,7 +23,6 @@ class DBHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME, null
         const val COL_CATEGORIA_ID = "id"
         const val COL_CATEGORIA_NOMBRE = "nombre"
 
-        // Tabla ropa
         const val TABLE_ROPA = "ropa"
         const val COL_ROPA_ID = "id"
         const val COL_ROPA_MODELO = "modelo"
@@ -35,6 +33,29 @@ class DBHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME, null
         const val COL_ROPA_PRECIO = "precio"
         const val COL_ROPA_CANTIDAD = "cantidad"
         const val COL_ROPA_FOTO = "foto"
+
+        const val TABLE_CLIENTE = "cliente"
+        const val COL_CLIENTE_ID = "id"
+        const val COL_CLIENTE_TELEFONO = "telefono"
+        const val COL_CLIENTE_NOMBRES = "nombres"
+        const val COL_CLIENTE_APELLIDOS = "apellidos"
+        const val COL_CLIENTE_FECHA_REGISTRO = "fecha_registro"
+
+        const val TABLE_PEDIDO = "pedido"
+        const val COL_PEDIDO_ID = "id"
+        const val COL_PEDIDO_ID_CLIENTE = "id_cliente"
+        const val COL_PEDIDO_FECHA = "fecha"
+        const val COL_PEDIDO_TOTAL = "total"
+        const val COL_PEDIDO_ESTADO = "estado"
+        const val COL_PEDIDO_FECHA_ATENCION = "fecha_atencion"
+
+        const val TABLE_DETALLE_PEDIDO = "detalle_pedido"
+        const val COL_DETALLE_ID = "id"
+        const val COL_DETALLE_ID_PEDIDO = "id_pedido"
+        const val COL_DETALLE_ID_ROPA = "id_ropa"
+        const val COL_DETALLE_CANTIDAD = "cantidad"
+        const val COL_DETALLE_PRECIO_UNIT = "precio_unit"
+        const val COL_DETALLE_SUBTOTAL = "subtotal"
     }
 
     override fun onConfigure(db: SQLiteDatabase) {
@@ -43,8 +64,17 @@ class DBHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME, null
     }
 
     override fun onCreate(db: SQLiteDatabase) {
+        crearTodasLasTablas(db)
+        insertarDatosSemilla(db)
+    }
+
+    override fun onUpgrade(db: SQLiteDatabase, oldVersion: Int, newVersion: Int) {
+        crearTodasLasTablas(db)
+    }
+
+    private fun crearTodasLasTablas(db: SQLiteDatabase) {
         val createTableUsuario = """
-            CREATE TABLE $TABLE_USUARIO (
+            CREATE TABLE IF NOT EXISTS $TABLE_USUARIO (
                 $COL_USUARIO_ID INTEGER PRIMARY KEY AUTOINCREMENT,
                 $COL_USUARIO_NOMBRE TEXT UNIQUE NOT NULL,
                 $COL_USUARIO_CLAVE TEXT NOT NULL,
@@ -54,14 +84,14 @@ class DBHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME, null
         """.trimIndent()
 
         val createTableCategoria = """
-            CREATE TABLE $TABLE_CATEGORIA (
+            CREATE TABLE IF NOT EXISTS $TABLE_CATEGORIA (
                 $COL_CATEGORIA_ID INTEGER PRIMARY KEY AUTOINCREMENT,
                 $COL_CATEGORIA_NOMBRE TEXT UNIQUE NOT NULL
             );
         """.trimIndent()
 
         val createTableRopa = """
-            CREATE TABLE $TABLE_ROPA (
+            CREATE TABLE IF NOT EXISTS $TABLE_ROPA (
                 $COL_ROPA_ID INTEGER PRIMARY KEY AUTOINCREMENT,
                 $COL_ROPA_MODELO TEXT NOT NULL,
                 $COL_ROPA_ID_CATEGORIA INTEGER NOT NULL,
@@ -75,31 +105,68 @@ class DBHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME, null
             );
         """.trimIndent()
 
+        val createTableCliente = """
+            CREATE TABLE IF NOT EXISTS $TABLE_CLIENTE (
+                $COL_CLIENTE_ID INTEGER PRIMARY KEY AUTOINCREMENT,
+                $COL_CLIENTE_TELEFONO TEXT UNIQUE NOT NULL,
+                $COL_CLIENTE_NOMBRES TEXT NOT NULL,
+                $COL_CLIENTE_APELLIDOS TEXT NOT NULL,
+                $COL_CLIENTE_FECHA_REGISTRO TEXT
+            );
+        """.trimIndent()
+
+        val createTablePedido = """
+            CREATE TABLE IF NOT EXISTS $TABLE_PEDIDO (
+                $COL_PEDIDO_ID INTEGER PRIMARY KEY AUTOINCREMENT,
+                $COL_PEDIDO_ID_CLIENTE INTEGER NOT NULL,
+                $COL_PEDIDO_FECHA TEXT NOT NULL,
+                $COL_PEDIDO_TOTAL REAL NOT NULL,
+                $COL_PEDIDO_ESTADO TEXT NOT NULL,
+                $COL_PEDIDO_FECHA_ATENCION TEXT,
+                FOREIGN KEY ($COL_PEDIDO_ID_CLIENTE) REFERENCES $TABLE_CLIENTE($COL_CLIENTE_ID)
+            );
+        """.trimIndent()
+
+        val createTableDetalle = """
+            CREATE TABLE IF NOT EXISTS $TABLE_DETALLE_PEDIDO (
+                $COL_DETALLE_ID INTEGER PRIMARY KEY AUTOINCREMENT,
+                $COL_DETALLE_ID_PEDIDO INTEGER NOT NULL,
+                $COL_DETALLE_ID_ROPA INTEGER NOT NULL,
+                $COL_DETALLE_CANTIDAD INTEGER CHECK($COL_DETALLE_CANTIDAD > 0),
+                $COL_DETALLE_PRECIO_UNIT REAL NOT NULL,
+                $COL_DETALLE_SUBTOTAL REAL NOT NULL,
+                FOREIGN KEY ($COL_DETALLE_ID_PEDIDO) REFERENCES $TABLE_PEDIDO($COL_PEDIDO_ID) ON DELETE CASCADE,
+                FOREIGN KEY ($COL_DETALLE_ID_ROPA) REFERENCES $TABLE_ROPA($COL_ROPA_ID)
+            );
+        """.trimIndent()
+
         db.execSQL(createTableUsuario)
         db.execSQL(createTableCategoria)
         db.execSQL(createTableRopa)
-
-        val cvAdmin = ContentValues().apply {
-            put(COL_USUARIO_NOMBRE, "admin")
-            put(COL_USUARIO_CLAVE, "1234")
-            put(COL_USUARIO_ROL, "ADMIN")
-            put(COL_USUARIO_TELEFONO, "987654321")
-        }
-        db.insert(TABLE_USUARIO, null, cvAdmin)
-
-        val categoriasIniciales = listOf("Polos", "Pantalones", "Vestidos", "Casacas", "Zapatillas")
-        for (cat in categoriasIniciales) {
-            val cvCat = ContentValues().apply {
-                put(COL_CATEGORIA_NOMBRE, cat)
-            }
-            db.insert(TABLE_CATEGORIA, null, cvCat)
-        }
+        db.execSQL(createTableCliente)
+        db.execSQL(createTablePedido)
+        db.execSQL(createTableDetalle)
     }
 
-    override fun onUpgrade(db: SQLiteDatabase, oldVersion: Int, newVersion: Int) {
-        db.execSQL("DROP TABLE IF EXISTS $TABLE_ROPA")
-        db.execSQL("DROP TABLE IF EXISTS $TABLE_CATEGORIA")
-        db.execSQL("DROP TABLE IF EXISTS $TABLE_USUARIO")
-        onCreate(db)
+    private fun insertarDatosSemilla(db: SQLiteDatabase) {
+        try {
+            val cvAdmin = ContentValues().apply {
+                put(COL_USUARIO_NOMBRE, "admin")
+                put(COL_USUARIO_CLAVE, "1234")
+                put(COL_USUARIO_ROL, "ADMIN")
+                put(COL_USUARIO_TELEFONO, "987654321")
+            }
+            db.insertWithOnConflict(TABLE_USUARIO, null, cvAdmin, SQLiteDatabase.CONFLICT_IGNORE)
+
+            val categoriasIniciales = listOf("Polos", "Pantalones", "Vestidos", "Casacas", "Zapatillas")
+            for (cat in categoriasIniciales) {
+                val cvCat = ContentValues().apply {
+                    put(COL_CATEGORIA_NOMBRE, cat)
+                }
+                db.insertWithOnConflict(TABLE_CATEGORIA, null, cvCat, SQLiteDatabase.CONFLICT_IGNORE)
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
     }
 }

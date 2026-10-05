@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_margin="6dp"
+    android:layout_marginBottom="8dp"
     app:cardCornerRadius="16dp"
     app:cardElevation="3dp"
     app:cardBackgroundColor="@color/white"
@@ -13,61 +13,52 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:orientation="horizontal"
+        android:padding="12dp"
+        android:gravity="center_vertical">
 
         <ImageView
-            android:id="@+id/imgCatalogo"
-            android:layout_width="match_parent"
-            android:layout_height="140dp"
+            android:id="@+id/imgMiniaturaCarrito"
+            android:layout_width="64dp"
+            android:layout_height="64dp"
             android:scaleType="centerCrop"
             android:background="@color/gray_light"
             android:contentDescription="Prenda" />
 
         <LinearLayout
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:padding="10dp">
+            android:layout_weight="1"
+            android:layout_marginStart="12dp"
+            android:orientation="vertical">
 
             <TextView
                 android:id="@+id/tvModelo"
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:maxLines="1"
-                android:ellipsize="end"
                 android:text="Modelo"
                 android:textColor="@color/dark_black"
                 android:textSize="15sp"
                 android:textStyle="bold" />
 
             <TextView
-                android:id="@+id/tvTalla"
-                android:layout_width="match_parent"
+                android:id="@+id/tvDetalle"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="2dp"
-                android:text="Talla: M"
+                android:text="Talla: M • Cant: 2"
                 android:textColor="@color/gray_text"
                 android:textSize="13sp" />
 
             <TextView
-                android:id="@+id/tvPrecio"
-                android:layout_width="match_parent"
+                android:id="@+id/tvSubtotal"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="4dp"
-                android:text="S/. 99.90"
+                android:text="Subtotal: S/. 199.80"
                 android:textColor="@color/pink_primary"
-                android:textSize="15sp"
+                android:textSize="14sp"
                 android:textStyle="bold" />
-
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btnAgregarCarrito"
-                android:layout_width="match_parent"
-                android:layout_height="40dp"
-                android:layout_marginTop="8dp"
-                android:text="+ Agregar"
-                android:textSize="12sp"
-                app:backgroundTint="@color/pink_primary"
-                app:cornerRadius="20dp" />
         </LinearLayout>
 
     </LinearLayout>

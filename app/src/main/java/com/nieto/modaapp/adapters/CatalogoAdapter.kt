@@ -7,10 +7,13 @@ import com.nieto.modaapp.data.Ropa
 import com.nieto.modaapp.databinding.ItemCatalogoBinding
 import com.nieto.modaapp.utils.ImageUtils
 
-class CatalogoAdapter(private val listaRopa: List<Ropa>) : RecyclerView.Adapter<CatalogoAdapter.CatalogoViewHolder>() {
+class CatalogoAdapter(
+    private val listaRopa: List<Ropa>,
+    private val onAgregarClick: (Ropa) -> Unit
+) : RecyclerView.Adapter<CatalogoAdapter.CatalogoViewHolder>() {
 
     class CatalogoViewHolder(val binding: ItemCatalogoBinding) : RecyclerView.ViewHolder(binding.root) {
-        fun bind(ropa: Ropa) {
+        fun bind(ropa: Ropa, onAgregarClick: (Ropa) -> Unit) {
             binding.tvModelo.text = ropa.modelo
             binding.tvTalla.text = "Talla: ${ropa.talla}"
             binding.tvPrecio.text = "S/. %.2f".format(ropa.precio)
@@ -21,6 +24,10 @@ class CatalogoAdapter(private val listaRopa: List<Ropa>) : RecyclerView.Adapter<
             } else {
                 binding.imgCatalogo.setImageResource(android.R.drawable.ic_menu_gallery)
             }
+
+            binding.btnAgregarCarrito.setOnClickListener {
+                onAgregarClick(ropa)
+            }
         }
     }
 
@@ -30,7 +37,7 @@ class CatalogoAdapter(private val listaRopa: List<Ropa>) : RecyclerView.Adapter<
     }
 
     override fun onBindViewHolder(holder: CatalogoViewHolder, position: Int) {
-        holder.bind(listaRopa[position])
+        holder.bind(listaRopa[position], onAgregarClick)
     }
 
     override fun getItemCount(): Int = listaRopa.size

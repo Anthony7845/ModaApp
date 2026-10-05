@@ -7,20 +7,26 @@ import com.nieto.modaapp.data.Ropa
 import com.nieto.modaapp.databinding.ItemRopaAdminBinding
 import com.nieto.modaapp.utils.ImageUtils
 
-class RopaAdapter(private val listaRopa: List<Ropa>) : RecyclerView.Adapter<RopaAdapter.RopaViewHolder>() {
+class RopaAdapter(
+    private val listaRopa: List<Ropa>,
+    private val onRopaClick: (Ropa) -> Unit
+) : RecyclerView.Adapter<RopaAdapter.RopaViewHolder>() {
 
-    inner class RopaViewHolder(private val binding: ItemRopaAdminBinding) : RecyclerView.ViewHolder(binding.root) {
-        fun bind(ropa: Ropa) {
+    class RopaViewHolder(val binding: ItemRopaAdminBinding) : RecyclerView.ViewHolder(binding.root) {
+        fun bind(ropa: Ropa, onRopaClick: (Ropa) -> Unit) {
             binding.tvModelo.text = ropa.modelo
             binding.tvCategoriaTalla.text = "${ropa.nombreCategoria} • Talla ${ropa.talla}"
             binding.tvPrecioCantidad.text = "S/. %.2f • Stock: %d".format(ropa.precio, ropa.cantidad)
 
-            // Cargar imagen reducida para evitar OutOfMemoryError
             val bitmap = ImageUtils.cargarBitmapReducido(ropa.foto, 150, 150)
             if (bitmap != null) {
                 binding.imgMiniatura.setImageBitmap(bitmap)
             } else {
                 binding.imgMiniatura.setImageResource(android.R.drawable.ic_menu_gallery)
+            }
+
+            binding.root.setOnClickListener {
+                onRopaClick(ropa)
             }
         }
     }
@@ -31,7 +37,7 @@ class RopaAdapter(private val listaRopa: List<Ropa>) : RecyclerView.Adapter<Ropa
     }
 
     override fun onBindViewHolder(holder: RopaViewHolder, position: Int) {
-        holder.bind(listaRopa[position])
+        holder.bind(listaRopa[position], onRopaClick)
     }
 
     override fun getItemCount(): Int = listaRopa.size
